@@ -4,6 +4,7 @@ import Button from '../Button';
 
 import styles from './ToastPlayground.module.css';
 import ToastShelf from '../ToastShelf'
+import { useToastContext } from '../ToastProvider'
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
@@ -40,15 +41,12 @@ function ToastPlayground() {
     variant: VARIANT_OPTIONS[0]
   })
 
-  const [toasts, setToasts] = useState([])
+  const toastContext = useToastContext()
 
   const createToast = (e) => {
     e.preventDefault()
-    setToasts((prevToasts) => [...prevToasts, {id: window.crypto.randomUUID(), text: toastState.message, variant: toastState.variant }])
+    toastContext.createToast({text: toastState.message, variant: toastState.variant})
     dispatch(clear())
-  }
-  const removeToast = (id) => {
-    setToasts((prevToasts) => prevToasts.filter(toast => toast.id !== id))
   }
 
   return (
@@ -58,7 +56,7 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
 
-      <ToastShelf toasts={toasts} onRemove={removeToast}/>
+      <ToastShelf />
 
       <form className={styles.controlsWrapper} onSubmit={createToast}>
         <div className={styles.row}>
