@@ -3,12 +3,13 @@ import React, { useReducer, useState } from 'react'
 import Button from '../Button';
 
 import styles from './ToastPlayground.module.css';
-import Toast from '../Toast'
+import ToastShelf from '../ToastShelf'
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
 const setMessage = (message) => ({type: 'SET_MESSAGE', payload: message})
 const setVariant = (variant) => ({type: 'SET_VARIANT', payload: variant})
+const clear = () => ({type: 'CLEAR'})
 
 function reducer(state, action) {
   switch (action.type) {
@@ -22,6 +23,12 @@ function reducer(state, action) {
         ...state,
         variant: action.payload
       }
+    case 'CLEAR':
+      return {
+        ...state,
+        variant: VARIANT_OPTIONS[0],
+        message: ''
+      }
     default:
       return state
   }
@@ -33,7 +40,16 @@ function ToastPlayground() {
     variant: VARIANT_OPTIONS[0]
   })
 
-  const [showToast, setShowToast] = useState(false)
+  const [toasts, setToasts] = useState([])
+
+  const createToast = (e) => {
+    e.preventDefault()
+    setToasts((prevToasts) => [...prevToasts, {id: window.crypto.randomUUID(), text: toastState.message, variant: toastState.variant }])
+    dispatch(clear())
+  }
+  const removeToast = (id) => {
+    setToasts((prevToasts) => prevToasts.filter(toast => toast.id !== id))
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -42,11 +58,9 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
 
-      {showToast ? (
-        <Toast text={toastState.message} variant={toastState.variant} onDismiss={() => setShowToast(false)}/>
-      ) : null}
+      <ToastShelf toasts={toasts} onRemove={removeToast}/>
 
-      <div className={styles.controlsWrapper}>
+      <form className={styles.controlsWrapper} onSubmit={createToast}>
         <div className={styles.row}>
           <label
             htmlFor="message"
@@ -87,10 +101,10 @@ function ToastPlayground() {
           <div
             className={`${styles.inputWrapper} ${styles.radioWrapper}`}
           >
-            <Button onClick={() => setShowToast(true)}>Pop Toast!</Button>
+            <Button type="submit">Pop Toast!</Button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
