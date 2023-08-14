@@ -1,12 +1,12 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
 const ToastContext = createContext({})
 
-export function useToastContext() {
+export function useToasts() {
   return useContext(ToastContext)
 }
 
-function useToastContextValue() {
+function useToastContext() {
   const [toasts, setToasts] = useState([])
 
   const createToast = useCallback((toast) => {
@@ -17,6 +17,20 @@ function useToastContextValue() {
     setToasts((prevToasts) => prevToasts.filter(toast => toast.id !== id))
   }, [])
 
+  useEffect(() => {
+    function onEscapePress(event) {
+      if (event.code === 'Escape') {
+        setToasts([])
+      }
+    }
+
+    window.addEventListener('keydown', onEscapePress)
+
+    return () => {
+      window.removeEventListener('keydown', onEscapePress)
+    }
+  }, [])
+
   return useMemo(() => ({
     toasts,
     createToast,
@@ -25,7 +39,7 @@ function useToastContextValue() {
 }
 
 function ToastProvider({children}) {
-  const context = useToastContextValue()
+  const context = useToastContext()
 
   return <ToastContext.Provider value={context}>
     {children}

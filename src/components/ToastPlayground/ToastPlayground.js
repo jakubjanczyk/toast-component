@@ -4,7 +4,7 @@ import Button from '../Button';
 
 import styles from './ToastPlayground.module.css';
 import ToastShelf from '../ToastShelf'
-import { useToastContext } from '../ToastProvider'
+import { useToasts } from '../ToastProvider'
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
@@ -41,7 +41,7 @@ function ToastPlayground() {
     variant: VARIANT_OPTIONS[0]
   })
 
-  const toastContext = useToastContext()
+  const toastContext = useToasts()
 
   const createToast = (e) => {
     e.preventDefault()

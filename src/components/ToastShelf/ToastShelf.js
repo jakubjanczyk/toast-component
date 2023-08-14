@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 
 import Toast from '../Toast';
 import styles from './ToastShelf.module.css';
-import { useToastContext } from '../ToastProvider'
+import { useToasts } from '../ToastProvider'
 
 function ToastShelf() {
-  const {toasts, removeToast} = useToastContext()
+  const {toasts, removeToast} = useToasts()
 
   if (toasts.length === 0) {
     return null
