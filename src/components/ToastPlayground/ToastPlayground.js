@@ -1,8 +1,9 @@
-import React, { useReducer } from 'react'
+import React, { useReducer, useState } from 'react'
 
 import Button from '../Button';
 
 import styles from './ToastPlayground.module.css';
+import Toast from '../Toast'
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
@@ -27,10 +28,12 @@ function reducer(state, action) {
 }
 
 function ToastPlayground() {
-  const [state, dispatch] = useReducer(reducer, {
+  const [toastState, dispatch] = useReducer(reducer, {
     message: '',
     variant: VARIANT_OPTIONS[0]
   })
+
+  const [showToast, setShowToast] = useState(false)
 
   return (
     <div className={styles.wrapper}>
@@ -38,6 +41,10 @@ function ToastPlayground() {
         <img alt="Cute toast mascot" src="/toast.png" />
         <h1>Toast Playground</h1>
       </header>
+
+      {showToast ? (
+        <Toast text={toastState.message} variant={toastState.variant} onDismiss={() => setShowToast(false)}/>
+      ) : null}
 
       <div className={styles.controlsWrapper}>
         <div className={styles.row}>
@@ -49,7 +56,7 @@ function ToastPlayground() {
             Message
           </label>
           <div className={styles.inputWrapper}>
-            <textarea id="message" className={styles.messageInput} value={state.message} onChange={e => dispatch(setMessage(e.currentTarget.value))} />
+            <textarea id="message" className={styles.messageInput} value={toastState.message} onChange={e => dispatch(setMessage(e.currentTarget.value))} />
           </div>
         </div>
 
@@ -66,7 +73,7 @@ function ToastPlayground() {
                   type="radio"
                   name="variant"
                   value={variant}
-                  checked={state.variant === variant}
+                  checked={toastState.variant === variant}
                   onChange={() => dispatch(setVariant(variant))}
                 />
                   {variant}
@@ -80,7 +87,7 @@ function ToastPlayground() {
           <div
             className={`${styles.inputWrapper} ${styles.radioWrapper}`}
           >
-            <Button>Pop Toast!</Button>
+            <Button onClick={() => setShowToast(true)}>Pop Toast!</Button>
           </div>
         </div>
       </div>
