@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useReducer } from 'react'
 
 import Button from '../Button';
 
@@ -6,7 +6,32 @@ import styles from './ToastPlayground.module.css';
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
+const setMessage = (message) => ({type: 'SET_MESSAGE', payload: message})
+const setVariant = (variant) => ({type: 'SET_VARIANT', payload: variant})
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'SET_MESSAGE':
+      return {
+        ...state,
+        message: action.payload
+      }
+    case 'SET_VARIANT':
+      return {
+        ...state,
+        variant: action.payload
+      }
+    default:
+      return state
+  }
+}
+
 function ToastPlayground() {
+  const [state, dispatch] = useReducer(reducer, {
+    message: '',
+    variant: VARIANT_OPTIONS[0]
+  })
+
   return (
     <div className={styles.wrapper}>
       <header>
@@ -24,7 +49,7 @@ function ToastPlayground() {
             Message
           </label>
           <div className={styles.inputWrapper}>
-            <textarea id="message" className={styles.messageInput} />
+            <textarea id="message" className={styles.messageInput} value={state.message} onChange={e => dispatch(setMessage(e.currentTarget.value))} />
           </div>
         </div>
 
@@ -33,17 +58,20 @@ function ToastPlayground() {
           <div
             className={`${styles.inputWrapper} ${styles.radioWrapper}`}
           >
-            <label htmlFor="variant-notice">
-              <input
-                id="variant-notice"
-                type="radio"
-                name="variant"
-                value="notice"
-              />
-              notice
-            </label>
-
-            {/* TODO Other Variant radio buttons here */}
+            {VARIANT_OPTIONS.map(variant => {
+              return (
+                <label htmlFor={`variant-${variant}`} key={variant}>
+                <input
+                  id={`variant-${variant}`}
+                  type="radio"
+                  name="variant"
+                  value={variant}
+                  checked={state.variant === variant}
+                  onChange={() => dispatch(setVariant(variant))}
+                />
+                  {variant}
+              </label>
+              )})}
           </div>
         </div>
 
